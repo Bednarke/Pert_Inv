@@ -3,3 +3,8 @@ mne files edited:
 simulate evoked -  changed iir averaging very high to make noise go away
 forward.make_forward_dipole - TURNED EEG OFF
 dipole.py - fit dipole search using simplex at maxeval=10000
+
+TODO
+NEED to get first method of stc construction working so it makes good evoked.  use one source.
+Can I get simplex to approach from above and below so I can average errors better?
+Use averaging to put numbers to how much better it is.  see if worth

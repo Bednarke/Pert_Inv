@@ -1,0 +1,9 @@
+ I want this file to house functions that will be called within pert_inv
+
+ Pert Inv will handle construction of Px\Omega and pass them to its subfuncs
+
+ First thing that needs to happen: construction of dip src, good and bad forwards, stc.
+
+
+
+

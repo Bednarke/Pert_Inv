@@ -8,11 +8,8 @@ local_data_path = 'C:\MEG\Local_mne_data'
 data_path = 'C:\MEG\MNE-sample-data' # local copy of mne sample data
 raw_fname = data_path + '/MEG/sample/sample_audvis_raw.fif'
 cov_fname = data_path + '/MEG/sample/sample_audvis-cov.fif'
-# The paths to freesurfer reconstructions
 subjects_dir = data_path + '/subjects'
 subject = 'sample'
-
-print(data_path)
 trans = data_path + '\MEG\sample/sample_audvis_raw-trans.fif'
 mri_head_t, trans = _get_trans(trans)
 head_mri_t = invert_transform(mri_head_t)
@@ -20,11 +17,11 @@ info = mne.io.read_info(raw_fname)
 ########################################################################
 # Setup our sources, bem
 ########################################################################
-sphere = mne.make_sphere_model(r0=(0., 0., 0.), head_radius=None)
+sphere = mne.make_sphere_model(r0=(0., 0., 0.), head_radius=None) # Use this for all testing
+
 pos = dict(rr=[[0, 0, 0], [.05, .05, .05]], nn=[[0, 0, 1], [0, 0, 1]])  # in head coords
 pos['rr'] = mne.transforms.apply_trans(head_mri_t, pos['rr'])  # invert back to mri
 pos['nn'] = mne.transforms.apply_trans(head_mri_t, pos['nn'])
-print(pos['rr'])
 src = mne.setup_volume_source_space(subject=subject, pos=pos, mri=None,
                                     sphere=(0, 0, 0, 90), bem=None,
                                     surface=None, mindist=1.0, exclude=0.0,
@@ -81,7 +78,7 @@ mne.write_evokeds(sim_ave_fname, evoked)
 ###############################################################################
 pos = dict(rr=[[.05, .05, .05]], nn=[[0, 0, 1]])
 times = [1]
-dip = mne.Dipole(times, pos['rr'], [1e-7], pos['nn'], [1], name=None, conf=None, khi2=None, nfree=None)
+dip = mne.Dipole(times, pos['rr'], [1e-5], pos['nn'], [1], name=None, conf=None, khi2=None, nfree=None)
 fwd_dip, stc_dip = mne.forward.make_forward_dipole(dip, sphere, info, trans)
 fwd_dip_fixed = mne.convert_forward_solution(fwd_dip, surf_ori=True, force_fixed=True,
                                              use_cps=True)
