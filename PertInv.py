@@ -1,11 +1,11 @@
 import mne
-# from mne.datasets import sample
+from mne.datasets import sample
 import numpy as np  # noqa
 from mne.transforms import (_ensure_trans, transform_surface_to, apply_trans,
                           _get_trans, invert_transform, _print_coord_trans, _coord_frame_name,
                           Transform)
 local_data_path = 'C:\MEG\Local_mne_data'
-data_path = 'C:\MEG\MNE-sample-data' # local copy of mne sample data
+data_path = sample.data_path() # local copy of mne sample data
 raw_fname = data_path + '/MEG/sample/sample_audvis_raw.fif'
 cov_fname = data_path + '/MEG/sample/sample_audvis-cov.fif'
 # The paths to freesurfer reconstructions
@@ -82,7 +82,7 @@ mne.write_evokeds(sim_ave_fname, evoked)
 pos = dict(rr=[[.05, .05, .05]], nn=[[0, 0, 1]])
 times = [1]
 dip = mne.Dipole(times, pos['rr'], [1e-7], pos['nn'], [1], name=None, conf=None, khi2=None, nfree=None)
-fwd_dip, stc_dip = mne.forward.make_forward_dipole(dip, sphere, info, trans)
+fwd_dip, stc_dip = mne.forward.make_forward_dipole(dip, sphere, evoked.info, trans)
 fwd_dip_fixed = mne.convert_forward_solution(fwd_dip, surf_ori=True, force_fixed=True,
                                              use_cps=True)
 leadfield_dip = fwd_dip_fixed['sol']['data']
