@@ -1,4 +1,3 @@
-# hello
 import mne
 # from mne.datasets import sample
 import numpy as np  # noqa
