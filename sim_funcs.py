@@ -6,7 +6,7 @@ import numpy as np  # noqa
 from mne.transforms import (_ensure_trans, transform_surface_to, apply_trans,
                           _get_trans, invert_transform, _print_coord_trans, _coord_frame_name,
                           Transform)
-local_data_path = 'C:\MEG\Local_mne_data'
+# local_data_path = 'C:\MEG\Local_mne_data'
 data_path = sample.data_path()  # local copy of mne sample data
 raw_fname = data_path + '/MEG/sample/sample_audvis_raw.fif'
 cov_fname = data_path + '/MEG/sample/sample_audvis-cov.fif'

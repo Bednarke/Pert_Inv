@@ -1,17 +1,40 @@
 Scratch file for development and to-do
 
+make forward dipole code----
+# dip = mne.Dipole(times, position['rr'], [1e-5], position['nn'], [1],
+#                 name='index', conf=None, khi2=None, nfree=None)
+# fwd_dip_fixed, fwd_dip_pert_fixed, stc = compute_fwds_stc_with_make_forward_dipole(dip, info, coils, sphere)
+
+# evoked_dip = mne.simulation.simulate_evoked(fwd_dip_fixed, stc, evoked.info, cov, use_cps=True,
+#                                            iir_filter=None)
+# evoked_dip_pert = mne.simulation.simulate_evoked(fwd_dip_pert_fixed, stc, evoked.info, cov, use_cps=True,
+#                                            iir_filter=None)
+
+Averaging Code-----
+
+'''
+CHANGE POS TO POSITION
+xsum, ysum, zsum = 0, 0, 0
+for x in xrange(10):
+    dip_fit = mne.fit_dipole(evoked_dip, cov_fname, sphere, trans)[0]
+    xsum += dip_fit.pos[0, 0]
+    ysum += dip_fit.pos[0, 1]
+    zsum += dip_fit.pos[0, 2]
+
+dip_fit.pos[0, 0] = xsum / 10
+dip_fit.pos[0, 1] = ysum / 10
+dip_fit.pos[0, 2] = zsum / 10
+'''
+
 
 
 
 TODO
 -Find out how to turn eeg off in info so I dont have to hardcode eeg=False
 - Start Documenting in mne style
--Static link to data file in _make_perturbed_forward
+-Change static link to data file in _make_perturbed_forward to dynamic
 -create coil geometry class
 -Can I get simplex to approach from above and below so I can average errors better?
 -Use averaging to put numbers to how much better it is.  see if worth
--I want a file to house functions that will be called within pert_inv
-Pert Inv will handle construction of Px\Omega and pass them to its subfuncs
--First is stc & fwd. Param: Dip obj in head coords, coil obj. Return: pert fwd, shared stc unpert fwd
 -Second is simulation. param: pert stc+fwd, unpert fwd, return Dipole objects pert_dip_fit, unpert_dip_fit
 -Third step is logging data
