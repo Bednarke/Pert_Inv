@@ -1,0 +1,7 @@
+Running list of alterations to mne code
+
+-simulate evoked -  changed iir averaging very high to make noise go away - Necessary
+-dipole.py  -fit dipole search using cobyla with rhoend=5e-6, minimal boost
+            -but uncommented simplex code so I could use maxeval=10000,
+             accuracy seems capped either by algorithm GOF goal or
+             simply lower bound on error...
