@@ -25,20 +25,18 @@ position = dict(rr=[[.05, .05, .05]], nn=[[0, 0, 1]])
 times = [1]
 coils = 'placeholder'
 fwd_fixed, fwd_pert_fixed, stc = compute_fwds_stc(position, coils, sphere)
+###############################################################################
+dip = mne.Dipole(times, position['rr'], [1e-5], position['nn'], [1],
+                 name='index', conf=None, khi2=None, nfree=None)
+fwd_dip_fixed, fwd_dip_pert_fixed, stc = compute_fwds_stc_with_make_forward_dipole(dip, info, coils, sphere)
+###############################################################################
 evoked = mne.simulation.simulate_evoked(fwd_fixed, stc, info, cov, use_cps=True,
                                         iir_filter=None)
 evoked_pert = mne.simulation.simulate_evoked(fwd_pert_fixed, stc, info, cov, use_cps=True,
                                              iir_filter=None)
-###############################################################################
-dip = mne.Dipole(times, position['rr'], [1e-5], position['nn'], [1],
-                 name='index', conf=None, khi2=None, nfree=None)
-fwd_dip, stc_dip = mne.forward.make_forward_dipole(dip, sphere, evoked.info, trans)
-fwd_dip_fixed = mne.convert_forward_solution(fwd_dip, surf_ori=True, force_fixed=True,
-                                             use_cps=True)
-leadfield_dip = fwd_dip_fixed['sol']['data']
-
-###############################################################################
-evoked_dip = mne.simulation.simulate_evoked(fwd_dip_fixed, stc_dip, evoked.info, cov, use_cps=True,
+evoked_dip = mne.simulation.simulate_evoked(fwd_dip_fixed, stc, evoked.info, cov, use_cps=True,
+                                            iir_filter=None)
+evoked_dip_pert = mne.simulation.simulate_evoked(fwd_dip_pert_fixed, stc, evoked.info, cov, use_cps=True,
                                             iir_filter=None)
 ###############################################################################
 
@@ -61,7 +59,7 @@ dip_fit.pos[0, 2] = zsum / 10
 # print('Dipole fit at location', dip_fit.position)
 # dip_fit.plot_locations(trans, 'sample', subjects_dir, coord_frame='head', mode='orthoview')
 dip_fit_long = mne.fit_dipole(evoked, cov_fname, sphere, trans)[0]
-dip_fit_pert = mne.fit_dipole(evoked_pert, cov_fname, sphere, trans)[0]
+dip_fit_pert = mne.fit_dipole(evoked_dip_pert, cov_fname, sphere, trans)[0]
 dip_fit = mne.fit_dipole(evoked_dip, cov_fname, sphere, trans)[0]
 print('Long fit, short fit:', dip_fit_long.pos, dip_fit_pert.pos)
 

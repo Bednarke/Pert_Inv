@@ -147,37 +147,16 @@ def _create_meg_coil(coilset, ch, acc, do_es):
 
     # Create the result
 
-    ChNum = int(ch['ch_name'][5:])
     print("WORKING WITH PERTURBED COIL DEFINITIONS")
-    if ChNum >> 200:
-        res = dict(chname=ch['ch_name'], coil_class=coil['coil_class'],
-                   accuracy=coil['accuracy'], base=coil['base'], size=coil['size'],
-                   type=ch['coil_type'], w=3 * coil['w'], desc=coil['desc'],
-                   coord_frame=FIFF.FIFFV_COORD_DEVICE, rmag_orig=coil['rmag'],
-                   cosmag_orig=coil['cosmag'], coil_trans_orig=coil_trans,
-                   r0=coil_trans[:3, 3],
-                   rmag=apply_trans(coil_trans, coil['rmag']),
-                   cosmag=apply_trans(coil_trans, coil['cosmag'], False))
-    else:
-        res = dict(chname=ch['ch_name'], coil_class=coil['coil_class'],
-                   accuracy=coil['accuracy'], base=coil['base'], size=coil['size'],
-                   type=ch['coil_type'], w=random.randint(0, 1)*coil['w'], desc=coil['desc'],
-                   coord_frame=FIFF.FIFFV_COORD_DEVICE, rmag_orig=coil['rmag'],
-                   cosmag_orig=coil['cosmag'], coil_trans_orig=coil_trans,
-                   r0=coil_trans[:3, 3],
-                   rmag=apply_trans(coil_trans, coil['rmag']),
-                   cosmag=apply_trans(coil_trans, coil['cosmag'], False))
-
-    '''
     res = dict(chname=ch['ch_name'], coil_class=coil['coil_class'],
                accuracy=coil['accuracy'], base=coil['base'], size=coil['size'],
-               type=ch['coil_type'], w=coil['w'], desc=coil['desc'],
+               type=ch['coil_type'], w=random.randint(0, 1) * coil['w'], desc=coil['desc'],
                coord_frame=FIFF.FIFFV_COORD_DEVICE, rmag_orig=coil['rmag'],
                cosmag_orig=coil['cosmag'], coil_trans_orig=coil_trans,
                r0=coil_trans[:3, 3],
                rmag=apply_trans(coil_trans, coil['rmag']),
                cosmag=apply_trans(coil_trans, coil['cosmag'], False))
-    '''
+
     if do_es:
         r0_exey = (np.dot(coil['rmag'][:, :2], coil_trans[:3, :2].T) +
                    coil_trans[:3, 3])
@@ -649,7 +628,7 @@ def make_pert_forward_solution(info, trans, src, bem, meg=True, eeg=True,
     return fwd
 
 
-def make_forward_dipole(dipole, bem, info, trans=None, n_jobs=1, verbose=None):
+def make_pert_forward_dipole(dipole, bem, info, trans=None, n_jobs=1, verbose=None):
     """Convert dipole object to source estimate and calculate forward operator.
 
     The instance of Dipole is converted to a discrete source space,
@@ -716,7 +695,7 @@ def make_forward_dipole(dipole, bem, info, trans=None, n_jobs=1, verbose=None):
     # Forward operator created for channels in info (use pick_info to restrict)
     # Use defaults for most params, including min_dist
     fwd = make_pert_forward_solution(info, trans, src, bem, n_jobs=n_jobs,
-                                verbose=verbose)
+                                verbose=verbose, eeg=False)
     # Convert from free orientations to fixed (in-place)
     convert_forward_solution(fwd, surf_ori=False, force_fixed=True,
                              copy=False, use_cps=False, verbose=None)

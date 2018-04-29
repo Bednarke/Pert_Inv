@@ -4,3 +4,5 @@ Running list of alterations to mne code
             -but uncommented simplex code so I could use maxeval=10000,
              accuracy seems capped either by algorithm GOF goal or
              simply lower bound on error...
+            -make_pert_forward_dipole has eeg hardcoded to False
+            -mne.forward.make_forward_solution also has eeg=False

@@ -4,7 +4,7 @@ Scratch file for development and to-do
 
 
 TODO
--NEED to get first method of stc construction working so it makes good evoked.  use one source.
+-Find out how to turn eeg off in info so I dont have to hardcode eeg=False
 - Start Documenting in mne style
 -Static link to data file in _make_perturbed_forward
 -create coil geometry class

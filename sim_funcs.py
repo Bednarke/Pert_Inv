@@ -1,6 +1,6 @@
 # House funcs here so PertInv is just scripting
 import mne
-from _make_perturbed_forward import make_pert_forward_solution
+from _make_perturbed_forward import make_pert_forward_solution, make_pert_forward_dipole
 from mne.datasets import sample
 import numpy as np  # noqa
 from mne.transforms import (_ensure_trans, transform_surface_to, apply_trans,
@@ -15,7 +15,6 @@ subject = 'sample'
 trans = data_path + '\MEG\sample/sample_audvis_raw-trans.fif'
 mri_head_t, trans = _get_trans(trans)
 head_mri_t = invert_transform(mri_head_t)
-info = mne.io.read_info(raw_fname)
 
 
 def compute_fwds_stc(position, coils, sphere):
@@ -39,6 +38,19 @@ def compute_fwds_stc(position, coils, sphere):
     amplitude = 1e-5
     stc = mne.VolSourceEstimate(amplitude * np.eye(1), [[0]], tmin=0., tstep=1)
     return fwd_fixed, fwd_pert_fixed, stc
+
+
+def compute_fwds_stc_with_make_forward_dipole(dip, info, coils, sphere):
+    dipole = dip.copy()
+    fwd, stc = mne.forward.make_forward_dipole(dipole, sphere, info, trans)
+    fwd_pert, stc = make_pert_forward_dipole(dipole, sphere, info, trans)
+    fwd_fixed = mne.convert_forward_solution(fwd, surf_ori=True, force_fixed=True,
+                                             use_cps=True)
+
+    fwd_pert_fixed = mne.convert_forward_solution(fwd_pert, surf_ori=True, force_fixed=True,
+                                                  use_cps=True)
+    return fwd_fixed, fwd_pert_fixed, stc
+
 
 
 
