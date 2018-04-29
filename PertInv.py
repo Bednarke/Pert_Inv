@@ -1,11 +1,13 @@
 import mne
-# from mne.datasets import sample
+from mne.datasets import sample
+from sim_funcs import test
+from _make_perturbed_forward import make_forward_solution
 import numpy as np  # noqa
 from mne.transforms import (_ensure_trans, transform_surface_to, apply_trans,
                           _get_trans, invert_transform, _print_coord_trans, _coord_frame_name,
                           Transform)
 local_data_path = 'C:\MEG\Local_mne_data'
-data_path = 'C:\MEG\MNE-sample-data' # local copy of mne sample data
+data_path = sample.data_path()  # local copy of mne sample data
 raw_fname = data_path + '/MEG/sample/sample_audvis_raw.fif'
 cov_fname = data_path + '/MEG/sample/sample_audvis-cov.fif'
 subjects_dir = data_path + '/subjects'
@@ -29,8 +31,10 @@ src = mne.setup_volume_source_space(subject=subject, pos=pos, mri=None,
                                     add_interpolator=True, verbose=None)
 # print src
 print('sources in MRI')
-fwd = mne.make_forward_solution(raw_fname, trans=trans, src=src, bem=sphere,
-                                meg=True, eeg=False, mindist=1.0, n_jobs=1)
+fwd = make_forward_solution(raw_fname, trans=trans, src=src, bem=sphere,
+                            meg=True, eeg=False, mindist=1.0, n_jobs=1)
+#  fwd = mne.make_forward_solution(raw_fname, trans=trans, src=src, bem=sphere,
+#                                meg=True, eeg=False, mindist=1.0, n_jobs=1)
 fwd_fixed = mne.convert_forward_solution(fwd, surf_ori=True, force_fixed=True,
                                          use_cps=True)
 leadfield = fwd_fixed['sol']['data']
@@ -72,11 +76,7 @@ leadfield_dip = fwd_dip_fixed['sol']['data']
 evoked_dip = mne.simulation.simulate_evoked(fwd_dip_fixed, stc_dip, evoked.info, cov, nave=nave, use_cps=True,
                                             iir_filter=None)
 ###############################################################################
-# Write Evoked
-sim_ave_dip_fname = local_data_path + '/MEG/sample/sample_audvis-sphere-2SourceEvoked_dip-ave.fif'
-mne.write_evokeds(sim_ave_dip_fname, evoked_dip)
 
-###############################################################################
 '''
 xsum, ysum, zsum = 0, 0, 0
 for x in xrange(10):
@@ -94,6 +94,8 @@ dip_fit.pos[0, 2] = zsum / 10
 
 # print('Dipole fit at location', dip_fit.pos)
 # dip_fit.plot_locations(trans, 'sample', subjects_dir, coord_frame='head', mode='orthoview')
+dip_fit_long = mne.fit_dipole(evoked_dip, cov_fname, sphere, trans)[0]
 dip_fit = mne.fit_dipole(evoked, cov_fname, sphere, trans)[0]
-print('Dipole fit at location', dip_fit.pos)
+print('Long fit, short fit:', dip_fit_long.pos, dip_fit.pos)
+
 

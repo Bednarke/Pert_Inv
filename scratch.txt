@@ -6,6 +6,7 @@ Scratch file for development and to-do
 TODO
 -NEED to get first method of stc construction working so it makes good evoked.  use one source.
 - Start Documenting in mne style
+-Static link to data file in _make_perturbed_forward
 -create coil geometry class
 -Can I get simplex to approach from above and below so I can average errors better?
 -Use averaging to put numbers to how much better it is.  see if worth
