@@ -110,6 +110,7 @@ dip_fit.pos[0, 2] = zsum / 10
 '''
 # dip_fit = mne.fit_dipole(evoked, cov_fname, sphere, trans)[0]
 # Plot the result in 3D brain with the MRI image.
+
 # print('Dipole fit at location', dip_fit.pos)
 # dip_fit.plot_locations(trans, 'sample', subjects_dir, coord_frame='head', mode='orthoview')
 dip_fit = mne.fit_dipole(evoked_dip, cov_fname, sphere, trans)[0]
