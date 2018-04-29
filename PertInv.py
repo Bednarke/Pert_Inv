@@ -46,10 +46,6 @@ SourceLocations1 = fwd['src'][0]['rr']
 fixedtruth = mne.forward.is_fixed_orient(fwd)
 print(fixedtruth)  # indeed not fixed
 print(SourceLocations1)  # This indicates our fwd is in head coords!
-# print(fwd)
-
-fwd_fname = data_path + '/MEG/sample/sample_audvis-INDEX-fwd.fif'
-# mne.write_forward_solution(spherefwd_fname, fwd, overwrite=True, verbose=None)
 
 fwd_fixed = mne.convert_forward_solution(fwd, surf_ori=True, force_fixed=True,
                                          use_cps=True)
@@ -60,8 +56,8 @@ leadfield = fwd_fixed['sol']['data']
 SourceLocations2 = fwd_fixed['src'][0]['rr']
 print(SourceLocations2)
 print("Leadfield size : %d sensors x %d dipoles" % leadfield.shape)
-fixedspherefwd_fname = data_path + '/MEG/sample/sample_audvis-sphere-2Source-fwd.fif'
-mne.write_forward_solution(fixedspherefwd_fname, fwd_fixed, overwrite=True, verbose=None)
+fixed_fwd_fname = data_path + '/MEG/sample/sample_audvis-sphere-2Source-fwd.fif'
+mne.write_forward_solution(fixed_fwd_fname, fwd_fixed, overwrite=True, verbose=None)
 
 ###############################################################################
 # IMPORTANT
@@ -72,12 +68,11 @@ vertices = [src_hemi['vertno'] for src_hemi in fwd_fixed['src']]
 stc = mne.VolSourceEstimate(1e-9 * np.eye(n_dipoles), vertices, tmin=0., tstep=1)
 cov = mne.read_cov(cov_fname)
 nave = 10000  # simulate average of 100 epochs
-evoked = mne.simulation.simulate_
-evoked(fwd_fixed, stc, info, cov, nave=nave, use_cps=True,
+evoked = mne.simulation.simulate_evoked(fwd_fixed, stc, info, cov, nave=nave, use_cps=True,
                                         iir_filter=None)
 ###############################################################################
 # Write Evoked
-sim_ave_fname = local_data_path + '/sample/sample_audvis-sphere-2SourceEvoked-ave.fif'
+sim_ave_fname = local_data_path + '/MEG/sample/sample_audvis-sphere-2SourceEvoked-ave.fif'
 mne.write_evokeds(sim_ave_fname, evoked)
 
 ###############################################################################
@@ -99,3 +94,8 @@ evoked_dip = mne.simulation.simulate_evoked(fwd_dip_fixed, stc_dip, info, cov, n
 # Write Evoked
 sim_ave_dip_fname = local_data_path + '/MEG/sample/sample_audvis-sphere-2SourceEvoked_dip-ave.fif'
 mne.write_evokeds(sim_ave_dip_fname, evoked_dip)
+
+###############################################################################
+dip_fit = mne.fit_dipole(evoked_dip, cov_fname, sphere, trans)[0]
+# Plot the result in 3D brain with the MRI image.
+dip_fit.plot_locations(trans, 'sample', subjects_dir, mode='orthoview')
