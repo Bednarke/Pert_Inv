@@ -10,6 +10,7 @@ import os
 import mne
 from os import path as op
 import numpy as np
+import random
 
 from mne.io import read_info, _loc_to_coil_trans, _loc_to_eeg_loc, Info
 from mne.io.pick import _has_kit_refs, pick_types, pick_info
@@ -145,13 +146,13 @@ def _create_meg_coil(coilset, ch, acc, do_es):
     coil_trans = _loc_to_coil_trans(ch['loc'])
 
     # Create the result
-    '''
+
     ChNum = int(ch['ch_name'][5:])
     print("WORKING WITH PERTURBED COIL DEFINITIONS")
     if ChNum >> 200:
         res = dict(chname=ch['ch_name'], coil_class=coil['coil_class'],
                    accuracy=coil['accuracy'], base=coil['base'], size=coil['size'],
-                   type=ch['coil_type'], w=2 * coil['w'], desc=coil['desc'],
+                   type=ch['coil_type'], w=3 * coil['w'], desc=coil['desc'],
                    coord_frame=FIFF.FIFFV_COORD_DEVICE, rmag_orig=coil['rmag'],
                    cosmag_orig=coil['cosmag'], coil_trans_orig=coil_trans,
                    r0=coil_trans[:3, 3],
@@ -160,7 +161,7 @@ def _create_meg_coil(coilset, ch, acc, do_es):
     else:
         res = dict(chname=ch['ch_name'], coil_class=coil['coil_class'],
                    accuracy=coil['accuracy'], base=coil['base'], size=coil['size'],
-                   type=ch['coil_type'], w= coil['w'], desc=coil['desc'],
+                   type=ch['coil_type'], w=random.randint(0, 1)*coil['w'], desc=coil['desc'],
                    coord_frame=FIFF.FIFFV_COORD_DEVICE, rmag_orig=coil['rmag'],
                    cosmag_orig=coil['cosmag'], coil_trans_orig=coil_trans,
                    r0=coil_trans[:3, 3],
@@ -176,7 +177,7 @@ def _create_meg_coil(coilset, ch, acc, do_es):
                r0=coil_trans[:3, 3],
                rmag=apply_trans(coil_trans, coil['rmag']),
                cosmag=apply_trans(coil_trans, coil['cosmag'], False))
-
+    '''
     if do_es:
         r0_exey = (np.dot(coil['rmag'][:, :2], coil_trans[:3, :2].T) +
                    coil_trans[:3, 3])
@@ -526,7 +527,7 @@ def _prepare_for_forward(src, mri_head_t, info, bem, mindist, n_jobs,
 
 
 @verbose
-def make_forward_solution(info, trans, src, bem, meg=True, eeg=True,
+def make_pert_forward_solution(info, trans, src, bem, meg=True, eeg=True,
                           mindist=0.0, ignore_ref=False, n_jobs=1,
                           verbose=None):
     """Calculate a forward solution for a subject.
@@ -714,7 +715,7 @@ def make_forward_dipole(dipole, bem, info, trans=None, n_jobs=1, verbose=None):
 
     # Forward operator created for channels in info (use pick_info to restrict)
     # Use defaults for most params, including min_dist
-    fwd = make_forward_solution(info, trans, src, bem, n_jobs=n_jobs,
+    fwd = make_pert_forward_solution(info, trans, src, bem, n_jobs=n_jobs,
                                 verbose=verbose)
     # Convert from free orientations to fixed (in-place)
     convert_forward_solution(fwd, surf_ori=False, force_fixed=True,
