@@ -21,7 +21,7 @@ info = mne.io.read_info(raw_fname)
 # Setup our sources, bem
 ########################################################################
 sphere = mne.make_sphere_model(r0=(0., 0., 0.), head_radius=None)
-pos = dict(rr=[[0, 0, 0], [.05, .01, .01]], nn=[[0, 0, 1], [0, 0, 1]])  # in head coords
+pos = dict(rr=[[0, 0, 0], [.05, .05, .05]], nn=[[0, 0, 1], [0, 0, 1]])  # in head coords
 pos['rr'] = mne.transforms.apply_trans(head_mri_t, pos['rr'])  # invert back to mri
 pos['nn'] = mne.transforms.apply_trans(head_mri_t, pos['nn'])
 print(pos['rr'])
@@ -79,16 +79,16 @@ mne.write_evokeds(sim_ave_fname, evoked)
 # Plot
 
 ###############################################################################
-pos = dict(rr=[[0, 0, 0], [.05, .01, .01]], nn=[[0, 0, 1], [0, 0, 1]])
-times = stc._times
-dip = mne.Dipole(times, pos['rr'], [[1e-7], [1e-7]], pos['nn'], [[1], [1]], name=None, conf=None, khi2=None, nfree=None)
-fwd_dip, stc_dip = mne.forward.make_forward_dipole(dip, sphere, evoked.info, trans)
+pos = dict(rr=[[.05, .05, .05]], nn=[[0, 0, 1]])
+times = [1]
+dip = mne.Dipole(times, pos['rr'], [1e-7], pos['nn'], [1], name=None, conf=None, khi2=None, nfree=None)
+fwd_dip, stc_dip = mne.forward.make_forward_dipole(dip, sphere, info, trans)
 fwd_dip_fixed = mne.convert_forward_solution(fwd_dip, surf_ori=True, force_fixed=True,
                                              use_cps=True)
 leadfield_dip = fwd_dip_fixed['sol']['data']
 
 ###############################################################################
-evoked_dip = mne.simulation.simulate_evoked(fwd_dip_fixed, stc_dip, info, cov, nave=nave, use_cps=True,
+evoked_dip = mne.simulation.simulate_evoked(fwd_dip_fixed, stc_dip, evoked.info, cov, nave=nave, use_cps=True,
                                             iir_filter=None)
 ###############################################################################
 # Write Evoked
@@ -96,6 +96,22 @@ sim_ave_dip_fname = local_data_path + '/MEG/sample/sample_audvis-sphere-2SourceE
 mne.write_evokeds(sim_ave_dip_fname, evoked_dip)
 
 ###############################################################################
-dip_fit = mne.fit_dipole(evoked_dip, cov_fname, sphere, trans)[0]
+'''
+xsum, ysum, zsum = 0, 0, 0
+for x in xrange(10):
+    dip_fit = mne.fit_dipole(evoked_dip, cov_fname, sphere, trans)[0]
+    xsum += dip_fit.pos[0, 0]
+    ysum += dip_fit.pos[0, 1]
+    zsum += dip_fit.pos[0, 2]
+
+dip_fit.pos[0, 0] = xsum / 10
+dip_fit.pos[0, 1] = ysum / 10
+dip_fit.pos[0, 2] = zsum / 10
+'''
+# dip_fit = mne.fit_dipole(evoked, cov_fname, sphere, trans)[0]
 # Plot the result in 3D brain with the MRI image.
-dip_fit.plot_locations(trans, 'sample', subjects_dir, mode='orthoview')
+# print('Dipole fit at location', dip_fit.pos)
+# dip_fit.plot_locations(trans, 'sample', subjects_dir, coord_frame='head', mode='orthoview')
+dip_fit = mne.fit_dipole(evoked_dip, cov_fname, sphere, trans)[0]
+print('Dipole fit at location', dip_fit.pos)
+

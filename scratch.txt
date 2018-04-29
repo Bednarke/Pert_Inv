@@ -1,0 +1,5 @@
+mne files edited:
+
+simulate evoked -  changed iir averaging very high to make noise go away
+forward.make_forward_dipole - TURNED EEG OFF
+dipole.py - fit dipole search using simplex at maxeval=10000
