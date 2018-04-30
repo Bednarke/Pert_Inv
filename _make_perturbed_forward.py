@@ -147,7 +147,7 @@ def _create_meg_coil(coilset, ch, acc, do_es):
 
     # Create the result
 
-    print("WORKING WITH PERTURBED COIL DEFINITIONS")
+    #print(coil['coil_type'], coil['accuracy'])
     res = dict(chname=ch['ch_name'], coil_class=coil['coil_class'],
                accuracy=coil['accuracy'], base=coil['base'], size=coil['size'],
                type=ch['coil_type'], w=random.randint(0, 1) * coil['w'], desc=coil['desc'],
