@@ -32,5 +32,5 @@ dip_fit_long = mne.fit_dipole(evoked, cov_fname, sphere, trans)[0]
 dip_fit_pert = mne.fit_dipole(evoked_pert, cov_fname, sphere, trans)[0]
 print('Long fit, short fit:', dip_fit_long.pos, dip_fit_pert.pos)
 
-
+#
 
