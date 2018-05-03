@@ -65,6 +65,8 @@ def _read_coil_defs(elekta_defs=False, verbose=None):
     coils = list()
     if elekta_defs:
         coils += _read_coil_def_file(op.join(coil_dir, 'coil_def_Elekta.dat'))
+        print('BREAK. USING ELEKTA DEFS')
+        exit(0)
     coils += _read_coil_def_file(op.join(coil_dir, 'coil_def.dat'))
     return coils
 

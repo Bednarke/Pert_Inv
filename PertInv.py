@@ -28,8 +28,7 @@ for i in range(0, 70):
 
 position = dict(rr=[0], nn=[0])
 data = np.zeros((70, 22))
-print testsources['rr'][69][1]
-for i in range(69, 70):
+for i in range(0, 70):
     position['rr'][0] = testsources['rr'][i]
     position['nn'][0] = testsources['nn'][i]
     fwd_fixed, fwd_pert_fixed, stc = compute_fwds_stc(position, coils, sphere)
@@ -39,23 +38,13 @@ for i in range(69, 70):
                                                  iir_filter=None)
     xsum, ysum, zsum = 0, 0, 0
 
-    evoked_pert.info = evoked.info
-
+    # evoked_pert.info = evoked.info
     dip_fit_long = mne.fit_dipole(evoked, cov_fname, sphere, trans)[0]
     dip_fit_pert = mne.fit_dipole(evoked_pert, cov_fname, sphere, trans)[0]
-
-    for x in range(0, 5):
-        dip_fit = mne.fit_dipole(evoked, cov_fname, sphere, trans)[0]
-        xsum += dip_fit.pos[0, 0]
-        ysum += dip_fit.pos[0, 1]
-        zsum += dip_fit.pos[0, 2]
-
-    dip_fit_long.pos[0, 0] = xsum / 5
-    dip_fit_long.pos[0, 1] = ysum / 5
-    dip_fit_long.pos[0, 2] = zsum / 5
-
+    print(dip_fit_pert.pos[0, 2])
+    '''
     xsum, ysum, zsum = 0, 0, 0
-    for x in range(0, 5):
+    for x in range(0, 1):
         dip_fit = mne.fit_dipole(evoked_pert, cov_fname, sphere, trans)[0]
         xsum += dip_fit.pos[0, 0]
         ysum += dip_fit.pos[0, 1]
@@ -63,8 +52,8 @@ for i in range(69, 70):
 
     dip_fit_pert.pos[0, 0] = xsum / 5
     dip_fit_pert.pos[0, 1] = ysum / 5
-    dip_fit_pert.pos[0, 2] = zsum / 5
-
+   # dip_fit_pert.pos[0, 2] = zsum / 5
+    '''
     del fwd_fixed, fwd_pert_fixed, evoked, evoked_pert
     for j in range(0, 3):
         data[i, 1+j] = testsources['rr'][i][j]
@@ -75,9 +64,7 @@ for i in range(69, 70):
         data[i, 20] = dip_fit_long.gof
         data[i, 21] = dip_fit_pert.gof
 
-    if i == 69:
-        # dip_fit_long.plot_locations(trans, 'sample', subjects_dir, mode='orthoview')
-        dip_fit_pert.plot_locations(trans, 'sample', subjects_dir, mode='orthoview')
+
 data_fname = local_data_path + '/10_percent_imbalance.csv'
 np.savetxt(data_fname, data, delimiter=",")
 
