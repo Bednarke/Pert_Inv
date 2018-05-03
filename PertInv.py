@@ -75,7 +75,7 @@ for i in range(60, 70):
         data[i, 13+j] = dip_fit_pert.ori[0][j]
     i = i + 60
     print('Long fit, short fit:', dip_fit_long.pos, dip_fit_pert.pos)
-data_fname = local_data_path + '/rand_pert_data.csv'
+data_fname = local_data_path + '/10_percent_imbalance.csv'
 np.savetxt(data_fname, data, delimiter=",")
 
 
