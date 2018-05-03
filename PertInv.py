@@ -42,7 +42,7 @@ for i in range(69, 70):
     evoked_pert.info = evoked.info
 
     dip_fit_long = mne.fit_dipole(evoked, cov_fname, sphere, trans)[0]
-    dip_fit_pert = mne.fit_dipole(evoked, cov_fname, sphere, trans)[0]
+    dip_fit_pert = mne.fit_dipole(evoked_pert, cov_fname, sphere, trans)[0]
 
     for x in range(0, 5):
         dip_fit = mne.fit_dipole(evoked, cov_fname, sphere, trans)[0]
@@ -78,7 +78,7 @@ for i in range(69, 70):
     if i == 69:
         # dip_fit_long.plot_locations(trans, 'sample', subjects_dir, mode='orthoview')
         dip_fit_pert.plot_locations(trans, 'sample', subjects_dir, mode='orthoview')
-data_fname = local_data_path + '/10_percent_imbalancetest.csv'
+data_fname = local_data_path + '/10_percent_imbalance.csv'
 np.savetxt(data_fname, data, delimiter=",")
 
 
