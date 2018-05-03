@@ -7,8 +7,8 @@ local_data_path = 'C:\MEG\Local_mne_data'
 data_path = sample.data_path()  # local copy of mne sample data
 raw_fname = data_path + '/MEG/sample/sample_audvis_raw.fif'
 cov_fname = data_path + '/MEG/sample/sample_audvis-cov.fif'
-# subjects_dir = data_path + '/subjects'
-# subject = 'sample'
+subjects_dir = data_path + '/subjects'
+subject = 'sample'
 trans = data_path + '\MEG\sample/sample_audvis_raw-trans.fif'
 # Read files
 cov = mne.read_cov(cov_fname)
@@ -29,7 +29,7 @@ for i in range(0, 70):
 position = dict(rr=[0], nn=[0])
 data = np.zeros((10, 22))
 print testsources['rr'][69][1]
-for i in range(60, 70):
+for i in range(0, 70):
     position['rr'][0] = testsources['rr'][i]
     position['nn'][0] = testsources['nn'][i]
     fwd_fixed, fwd_pert_fixed, stc = compute_fwds_stc(position, coils, sphere)
@@ -66,17 +66,19 @@ for i in range(60, 70):
     print dip_fit_long.pos[0][2]
     dip_fit_pert = mne.fit_dipole(evoked_pert, cov_fname, sphere, trans)[0]
     del fwd_fixed, fwd_pert_fixed, evoked, evoked_pert
-    i = i - 60
     for j in range(0, 3):
         data[i, 1+j] = testsources['rr'][i][j]
         data[i, 4 + j] = dip_fit_long.pos[0][j]
         data[i, 7 + j] = dip_fit_long.ori[0][j]
         data[i, 10 + j] = dip_fit_pert.pos[0][j]
         data[i, 13+j] = dip_fit_pert.ori[0][j]
-    i = i + 60
-    print('Long fit, short fit:', dip_fit_long.pos, dip_fit_pert.pos)
+
+    if i == 69:
+        dip_fit_long.plot_locations(trans, 'sample', subjects_dir, mode='orthoview')
+        dip_fit_pert.plot_locations(trans, 'sample', subjects_dir, mode='orthoview')
 data_fname = local_data_path + '/10_percent_imbalance.csv'
 np.savetxt(data_fname, data, delimiter=",")
+
 
 
 

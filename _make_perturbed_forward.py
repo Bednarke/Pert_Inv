@@ -150,7 +150,7 @@ def _create_meg_coil(coilset, ch, acc, do_es):
     #print(coil['coil_type'], coil['accuracy'])
     res = dict(chname=ch['ch_name'], coil_class=coil['coil_class'],
                accuracy=coil['accuracy'], base=coil['base'], size=coil['size'],
-               type=ch['coil_type'], w=random.randint(0, 1) * coil['w'], desc=coil['desc'],
+               type=ch['coil_type'], w=coil['w'], desc=coil['desc'],
                coord_frame=FIFF.FIFFV_COORD_DEVICE, rmag_orig=coil['rmag'],
                cosmag_orig=coil['cosmag'], coil_trans_orig=coil_trans,
                r0=coil_trans[:3, 3],
