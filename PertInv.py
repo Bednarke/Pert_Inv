@@ -18,8 +18,10 @@ info = mne.io.read_info(raw_fname)
 ########################################################################
 sphere = mne.make_sphere_model(r0=(0., 0., 0.), head_radius=None)  # Use this for all testing
 
-perts = dict(imbalance=[], norm_error=[])
+perts = dict(mean_percent_imb=[0], variance_imb=[], preferred_side_imb=[0],
+             mean_error_nn=[], variance_nn=[], preferred_direction_nn=[])
 testsources = dict(rr=[], nn=[])
+print(perts['mean_percent_imb'])
 for i in range(0, 70):
     source = [0, 0, .001*i]
     normal = [.5, .5, 0]
