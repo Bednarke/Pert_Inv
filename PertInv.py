@@ -3,7 +3,7 @@ from mne.datasets import sample
 import numpy as np
 from sim_funcs import compute_fwds_stc_with_make_forward_dipole, compute_fwds_stc
 
-local_data_path = 'C:\MEG\Local_mne_data'
+local_data_path = 'C:\Users\/3l3ct\PycharmProjects\Pert_Inv\Local_mne_data'
 data_path = sample.data_path()  # local copy of mne sample data
 raw_fname = data_path + '/MEG/sample/sample_audvis_raw.fif'
 cov_fname = data_path + '/MEG/sample/sample_audvis-cov.fif'
@@ -30,7 +30,7 @@ for i in range(0, 70):
 
 position = dict(rr=[0], nn=[0])
 data = np.zeros((70, 22))
-for i in range(0, 70):
+for i in range(69, 70):
     position['rr'][0] = testsources['rr'][i]
     position['nn'][0] = testsources['nn'][i]
     fwd_fixed, fwd_pert_fixed, stc = compute_fwds_stc(position, perts, sphere)  #just use coil dict
