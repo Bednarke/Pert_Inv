@@ -36,7 +36,7 @@ _accuracy_dict = dict(normal=FIFF.FWD_COIL_ACCURACY_NORMAL,
 
 
 @verbose
-def _read_coil_defs(elekta_defs=False, verbose=None):
+def _read_coil_defs(perts, elekta_defs=False, verbose=None):
     """Read a coil definition file.
 
     Parameters
@@ -50,7 +50,9 @@ def _read_coil_defs(elekta_defs=False, verbose=None):
     verbose : bool, str, int, or None
         If not None, override default verbose level (see :func:`mne.verbose`
         and :ref:`Logging documentation <tut_logging>` for more).
-
+    perts : dict
+        A dictionary containing perturbation parameters for gradiometer
+        imbalance, sensor miscalibration, and misalignment.
     Returns
     -------
     res : list of dict
@@ -67,7 +69,7 @@ def _read_coil_defs(elekta_defs=False, verbose=None):
         coils += _read_coil_def_file(op.join(coil_dir, 'coil_def_Elekta.dat'))
         print('BREAK. USING ELEKTA DEFS')
         exit(0)
-    coils += _read_coil_def_file(op.join(coil_dir, 'coil_def.dat'))
+    coils += _read_coil_def_file(op.join(coil_dir, 'coil_def.dat'), perts)
     return coils
 
 
@@ -76,7 +78,7 @@ def _read_coil_defs(elekta_defs=False, verbose=None):
 _coil_register = {}
 
 
-def _read_coil_def_file(fname):
+def _read_coil_def_file(fname, perts):
     """Read a coil def file."""
     if fname not in _coil_register:
         big_val = 0.5
@@ -90,7 +92,7 @@ def _read_coil_def_file(fname):
                 vals = np.fromstring(line, sep=' ')
                 assert len(vals) in (6, 7)  # newer numpy can truncate comment
                 start = line.find('"')
-                end = len(line.strip()) - 1 #remove outside whitespace
+                end = len(line.strip()) - 1  # remove outside whitespace
                 assert line.strip()[end] == '"'
                 desc = line[start:end]
                 npts = int(vals[3])
@@ -262,7 +264,7 @@ def _setup_bem(bem, bem_extra, neeg, mri_head_t, verbose=None):
 
 
 @verbose
-def _prep_meg_channels(info, accurate=True, exclude=(), ignore_ref=False,
+def _prep_meg_channels(info, perts, accurate=True, exclude=(), ignore_ref=False,
                        elekta_defs=False, head_frame=True, do_es=False,
                        do_picking=True, verbose=None):
     """Prepare MEG coil definitions for forward calculation.
@@ -271,6 +273,9 @@ def _prep_meg_channels(info, accurate=True, exclude=(), ignore_ref=False,
     ----------
     info : instance of Info
         The measurement information dictionary
+    perts : dict
+        A dictionary containing perturbation parameters for gradiometer
+        imbalance, sensor miscalibration, and misalignment
     accurate : bool
         If true (default) then use `accurate` coil definitions (more
         integration points)
@@ -345,7 +350,7 @@ def _prep_meg_channels(info, accurate=True, exclude=(), ignore_ref=False,
     picks = pick_types(info, meg=True, ref_meg=ref_meg, exclude=exclude)
 
     # Create coil descriptions with transformation to head or device frame
-    templates = _read_coil_defs(elekta_defs=elekta_defs)
+    templates = _read_coil_defs(perts, elekta_defs=elekta_defs)
 
     if head_frame:
         _print_coord_trans(info['dev_head_t'])
@@ -423,7 +428,7 @@ def _prep_eeg_channels(info, exclude=(), verbose=None):
 
 
 @verbose
-def _prepare_for_forward(src, mri_head_t, info, bem, mindist, n_jobs,
+def _prepare_for_forward(src, mri_head_t, info, bem, mindist, n_jobs, perts,
                          bem_extra='', trans='', info_extra='',
                          meg=True, eeg=True, ignore_ref=False, verbose=None):
     """Prepare for forward computation."""
@@ -464,7 +469,7 @@ def _prepare_for_forward(src, mri_head_t, info, bem, mindist, n_jobs,
 
     if meg and len(pick_types(info, ref_meg=False, exclude=[])) > 0:
         megcoils, compcoils, megnames, meg_info = \
-            _prep_meg_channels(info, ignore_ref=ignore_ref)
+            _prep_meg_channels(info, perts, ignore_ref=ignore_ref)
     if eeg and len(pick_types(info, meg=False, eeg=True, ref_meg=False,
                               exclude=[])) > 0:
         eegels, eegnames = _prep_eeg_channels(info)
@@ -508,7 +513,7 @@ def _prepare_for_forward(src, mri_head_t, info, bem, mindist, n_jobs,
 
 
 @verbose
-def make_pert_forward_solution(info, trans, src, bem, meg=True, eeg=True,
+def make_pert_forward_solution(info, trans, src, bem, perts, meg=True, eeg=True,
                           mindist=0.0, ignore_ref=False, n_jobs=1,
                           verbose=None):
     """Calculate a forward solution for a subject.
@@ -544,6 +549,9 @@ def make_pert_forward_solution(info, trans, src, bem, meg=True, eeg=True,
         with reference channels is not currently supported.
     n_jobs : int
         Number of jobs to run in parallel.
+    perts : dict
+        A dictionary containing perturbation parameters for gradiometer
+        imbalance, sensor miscalibration, and misalignment
     verbose : bool, str, int, or None
         If not None, override default verbose level (see :func:`mne.verbose`
         and :ref:`Logging documentation <tut_logging>` for more).
@@ -603,7 +611,7 @@ def make_pert_forward_solution(info, trans, src, bem, meg=True, eeg=True,
 
     megcoils, meg_info, compcoils, megnames, eegels, eegnames, rr, info, \
         update_kwargs, bem = _prepare_for_forward(
-            src, mri_head_t, info, bem, mindist, n_jobs, bem_extra, trans,
+            src, mri_head_t, info, bem, mindist, n_jobs, perts, bem_extra, trans,
             info_extra, meg, eeg, ignore_ref)
     del (src, mri_head_t, trans, info_extra, bem_extra, mindist,
          meg, eeg, ignore_ref)

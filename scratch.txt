@@ -30,8 +30,8 @@ dip_fit.pos[0, 2] = zsum / 10
 
 
 TODO
--Find out how to turn eeg off in info so I dont have to hardcode eeg=False
-- Start Documenting in mne style
+-edit line 597 in make_pert_fwd to report perts
+-Start Documenting in mne style
 -Change static link to data file in _make_perturbed_forward to dynamic
 -create coil geometry class
 -Can I get simplex to approach from above and below so I can average errors better?

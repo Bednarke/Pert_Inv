@@ -17,7 +17,7 @@ mri_head_t, trans = _get_trans(trans)
 head_mri_t = invert_transform(mri_head_t)
 
 
-def compute_fwds_stc(position, coils, sphere):
+def compute_fwds_stc(position, perts, sphere):
     pos = position.copy()
     pos['rr'] = mne.transforms.apply_trans(head_mri_t, position['rr'])  # invert back to mri
     pos['nn'] = mne.transforms.apply_trans(head_mri_t, position['nn'])
@@ -26,7 +26,7 @@ def compute_fwds_stc(position, coils, sphere):
                                         surface=None, mindist=1.0, exclude=0.0,
                                         subjects_dir=None, volume_label=None,
                                         add_interpolator=True, verbose=None)
-    fwd_pert = make_pert_forward_solution(raw_fname, trans=trans, src=src, bem=sphere,
+    fwd_pert = make_pert_forward_solution(raw_fname, trans=trans, src=src, bem=sphere, perts=perts,
                                           meg=True, eeg=False, mindist=1.0, n_jobs=1)
     fwd = mne.make_forward_solution(raw_fname, trans=trans, src=src, bem=sphere,
                                     meg=True, eeg=False, mindist=1.0, n_jobs=1)

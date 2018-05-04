@@ -18,7 +18,7 @@ info = mne.io.read_info(raw_fname)
 ########################################################################
 sphere = mne.make_sphere_model(r0=(0., 0., 0.), head_radius=None)  # Use this for all testing
 
-coils = 'placeholder'
+perts = dict(imbalance=[], norm_error=[])
 testsources = dict(rr=[], nn=[])
 for i in range(0, 70):
     source = [0, 0, .001*i]
@@ -31,17 +31,15 @@ data = np.zeros((70, 22))
 for i in range(0, 70):
     position['rr'][0] = testsources['rr'][i]
     position['nn'][0] = testsources['nn'][i]
-    fwd_fixed, fwd_pert_fixed, stc = compute_fwds_stc(position, coils, sphere)  #just use coil dict
+    fwd_fixed, fwd_pert_fixed, stc = compute_fwds_stc(position, perts, sphere)  #just use coil dict
     evoked = mne.simulation.simulate_evoked(fwd_fixed, stc, info, cov, use_cps=True,
                                             iir_filter=None)
     evoked_pert = mne.simulation.simulate_evoked(fwd_pert_fixed, stc, info, cov, use_cps=True,
                                                  iir_filter=None)
-    xsum, ysum, zsum = 0, 0, 0
 
     # evoked_pert.info = evoked.info
     dip_fit_long = mne.fit_dipole(evoked, cov_fname, sphere, trans)[0]
     dip_fit_pert = mne.fit_dipole(evoked_pert, cov_fname, sphere, trans)[0]
-    print(dip_fit_pert.pos[0, 2])
     '''
     xsum, ysum, zsum = 0, 0, 0
     for x in range(0, 1):
