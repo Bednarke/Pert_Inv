@@ -31,7 +31,7 @@ data = np.zeros((70, 22))
 for i in range(0, 70):
     position['rr'][0] = testsources['rr'][i]
     position['nn'][0] = testsources['nn'][i]
-    fwd_fixed, fwd_pert_fixed, stc = compute_fwds_stc(position, coils, sphere)
+    fwd_fixed, fwd_pert_fixed, stc = compute_fwds_stc(position, coils, sphere)  #just use coil dict
     evoked = mne.simulation.simulate_evoked(fwd_fixed, stc, info, cov, use_cps=True,
                                             iir_filter=None)
     evoked_pert = mne.simulation.simulate_evoked(fwd_pert_fixed, stc, info, cov, use_cps=True,
