@@ -67,8 +67,6 @@ def _read_coil_defs(perts, elekta_defs=False, verbose=None):
     coils = list()
     if elekta_defs:
         coils += _read_coil_def_file(op.join(coil_dir, 'coil_def_Elekta.dat'))
-        print('BREAK. USING ELEKTA DEFS')
-        exit(0)
     coils += _read_coil_def_file(op.join(coil_dir, 'coil_def.dat'), perts)
     return coils
 
@@ -102,6 +100,7 @@ def _read_coil_def_file(fname, perts):
                 rmag = list()
                 cosmag = list()
                 w = list()
+                x = .01*perts['mean_percent_imb'][0]
                 for p in range(npts):
                     # get next non-comment line
                     line = lines.pop()
@@ -109,9 +108,22 @@ def _read_coil_def_file(fname, perts):
                         line = lines.pop()
                     vals = np.fromstring(line, sep=' ') #Generate int point date here
                     assert len(vals) == 7
-
+                    alpha = abs(npts*vals[0])
+                    difference = alpha*x/(npts*(2+x))
+                    coiltype = int(coil['coil_type'])
+                    # print(int(coil['coil_type']), type(coil['coil_type']), difference)
                     # Read and verify data for each integration point
-                    w.append(vals[0])
+                    if coiltype == 3012:
+                        w.append(vals[0] + difference)
+                        '''if p >> npts/2:
+                            w.append(vals[0] + difference)
+                            print(vals[0])
+                            print(vals[0] + difference)
+                            exit(0)
+                        else:
+                            w.append(vals[0]+difference)'''
+                    else:
+                        w.append(vals[0])
                     rmag.append(vals[[1, 2, 3]])
                     cosmag.append(vals[[4, 5, 6]])
                 w = np.array(w)

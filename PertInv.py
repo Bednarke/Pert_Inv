@@ -18,10 +18,10 @@ info = mne.io.read_info(raw_fname)
 ########################################################################
 sphere = mne.make_sphere_model(r0=(0., 0., 0.), head_radius=None)  # Use this for all testing
 
-perts = dict(mean_percent_imb=[0], variance_imb=[], preferred_side_imb=[0],
+perts = dict(mean_percent_imb=[10], variance_imb=[], preferred_side_imb=[0],
              mean_error_nn=[], variance_nn=[], preferred_direction_nn=[])
 testsources = dict(rr=[], nn=[])
-print(perts['mean_percent_imb'])
+print(perts['mean_percent_imb'][0])
 for i in range(0, 70):
     source = [0, 0, .001*i]
     normal = [.5, .5, 0]
@@ -30,7 +30,7 @@ for i in range(0, 70):
 
 position = dict(rr=[0], nn=[0])
 data = np.zeros((70, 22))
-for i in range(69, 70):
+for i in range(5, 14):
     position['rr'][0] = testsources['rr'][i]
     position['nn'][0] = testsources['nn'][i]
     fwd_fixed, fwd_pert_fixed, stc = compute_fwds_stc(position, perts, sphere)  #just use coil dict
@@ -65,7 +65,7 @@ for i in range(69, 70):
         data[i, 21] = dip_fit_pert.gof
 
 
-data_fname = local_data_path + '/10_percent_imbalance.csv'
+data_fname = local_data_path + '/10_percent_imbalance_with_Elekta_defs.csv'
 np.savetxt(data_fname, data, delimiter=",")
 
 
