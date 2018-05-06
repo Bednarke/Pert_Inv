@@ -12,7 +12,7 @@ perts = dict(mean_percent_imb=0, variance_imb=[], preferred_side_imb=1,
 min_rad, max_rad = 0, 90
 max_imbalance = 10
 big_data = np.zeros((max_imbalance + 1, max_rad - min_rad + 1, 22))
-nn = [0, 1, 0]
+nn = [1, 0, 1]
 sign = perts['preferred_side_imb']
 for k in range(0, max_imbalance + 1):
     perts['mean_percent_imb'] = k
