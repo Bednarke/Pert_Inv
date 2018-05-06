@@ -33,8 +33,6 @@ def fit_dips(min_rad, max_rad, sphere, perts):
     pos = dict(rr=[0], nn=[0])
     pos['rr'] = mne.transforms.apply_trans(head_mri_t, testsources['rr'])  # invert back to mri
     pos['nn'] = mne.transforms.apply_trans(head_mri_t, testsources['nn'])
-    print(len(pos['rr']))
-
     src = mne.setup_volume_source_space(subject=subject, pos=pos, mri=None,
                                         sphere=(0, 0, 0, 90), bem=None,
                                         surface=None, mindist=1.0, exclude=0.0,
