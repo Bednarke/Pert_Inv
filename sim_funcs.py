@@ -19,13 +19,13 @@ cov = mne.read_cov(cov_fname)
 info = mne.io.read_info(raw_fname)
 
 
-def fit_dips(min_rad, max_rad, sphere, perts):
+def fit_dips(min_rad, max_rad, nn, sphere, perts):
     testsources = dict(rr=[], nn=[])
     nsources = max_rad - min_rad + 1
     vertices = np.zeros((nsources, 1))
     for i in range(min_rad, max_rad + 1):
         source = [0, 0, .001 * i]
-        normal = [.5, .5, 0]
+        normal = [nn[0], nn[1], nn[2]]
         testsources['rr'].append(source)
         testsources['nn'].append(normal)
         vertices[i - min_rad] = i

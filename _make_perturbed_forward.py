@@ -112,6 +112,7 @@ def _read_coil_def_file(fname, perts):
                     assert len(vals) == 7
                     alpha = abs(npts*vals[0])
                     difference = alpha*x/(npts*(2+x))
+                    sign = perts['preferred_side_imb']
                     coiltype = int(coil['coil_type'])
                     if coiltype == 3012 and acc == 2:
                         print(alpha, difference, vals[0])
@@ -119,7 +120,7 @@ def _read_coil_def_file(fname, perts):
                     # print(int(coil['coil_type']), type(coil['coil_type']), difference)
                     # Read and verify data for each integration point
                     if coiltype == 3012:
-                        w.append(vals[0] + difference)
+                        w.append(vals[0] + (-1)**sign*difference)
                         '''if p >> npts/2:
                             w.append(vals[0] + difference)
                             print(vals[0])
@@ -145,6 +146,7 @@ def _read_coil_def_file(fname, perts):
         _coil_register[fname] = coils
     coils = deepcopy(_coil_register[fname])
     logger.info('%d coil definitions read', len(coils))
+    print(coils)
     return coils
 
 
