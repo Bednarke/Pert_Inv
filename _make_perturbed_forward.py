@@ -130,6 +130,8 @@ def _read_coil_def_file(fname, perts):
                             w.append(vals[0]+difference)'''
                     else:
                         w.append(vals[0])
+                    dx = np.random.randint(-2, 2)*.01
+                    vals[1] += dx
                     rmag.append(vals[[1, 2, 3]])
                     cosmag.append(vals[[4, 5, 6]])
                 w = np.array(w)

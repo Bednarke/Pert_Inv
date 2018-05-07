@@ -10,7 +10,8 @@ sphere = mne.make_sphere_model(r0=(0., 0., 0.), head_radius=None)  # Use this fo
 perts = dict(mean_percent_imb=0, variance_imb=[], preferred_side_imb=1,
              mean_error_nn=[], variance_nn=[], preferred_direction_nn=[])
 min_rad, max_rad = 0, 90
-max_imbalance = 10
+max_imbalance = 5
+specialname = 'xshift'
 big_data = np.zeros((max_imbalance + 1, max_rad - min_rad + 1, 22))
 nn = [1, 0, 1]
 sign = perts['preferred_side_imb']
@@ -28,10 +29,10 @@ for k in range(0, max_imbalance + 1):
             data[i, 20] = dip_fit_long.gof[i]
             data[i, 21] = dip_fit_pert.gof[i]
     big_data[k] = data
-    data_fname = local_data_path + '/%s_imb%s_%s_MaxRad_00z_Norm%s%s%s.csv' \
+    data_fname = local_data_path + '/xshift_%s_imb%s_%s_MaxRad_00z_Norm%s%s%s.csv' \
                  % (perts['mean_percent_imb'], sign, max_rad, nn[0], nn[1], nn[2])
     np.savetxt(data_fname, data, delimiter=",")
-big_data_fname = local_data_path + '/%s_Max_imb%s_%s_MaxRad_00z_Norm%s%s%s.csv'\
+big_data_fname = local_data_path + '/xshift_%s_Max_imb%s_%s_MaxRad_00z_Norm%s%s%s.csv'\
                  % (max_imbalance, sign, max_rad, nn[0], nn[1], nn[2])
 np.save(big_data_fname, big_data)
 
