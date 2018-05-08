@@ -102,7 +102,7 @@ def _read_coil_def_file(fname, perts):
                 cosmag = list()
                 acc = int(vals[2])
                 w = list()
-                x = .01*perts['mean_percent_imb']
+                x = .01*perts['max_percent_imb']
                 for p in range(npts):
                     # get next non-comment line
                     line = lines.pop()
@@ -130,9 +130,15 @@ def _read_coil_def_file(fname, perts):
                             w.append(vals[0]+difference)'''
                     else:
                         w.append(vals[0])
-                    dx = np.random.randint(-2, 2)*.01
+                    shift = perts['max_translation']
+                    rot = perts['max_error_nn']
+                    if abs(shift) >> 0:
+                        dx = np.random.randint(-1*shift, shift)*.001
+                    if rot >> 0:
+                        dn = np.random.randint(rot)
                     vals[1] += dx
                     rmag.append(vals[[1, 2, 3]])
+                    print(vals[1], dx)
                     cosmag.append(vals[[4, 5, 6]])
                 w = np.array(w)
                 rmag = np.array(rmag)
@@ -148,7 +154,6 @@ def _read_coil_def_file(fname, perts):
         _coil_register[fname] = coils
     coils = deepcopy(_coil_register[fname])
     logger.info('%d coil definitions read', len(coils))
-    print(coils)
     return coils
 
 
