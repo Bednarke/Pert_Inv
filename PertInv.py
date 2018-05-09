@@ -4,10 +4,9 @@ import numpy as np
 from sim_funcs import fit_dips
 
 
-
 sphere = mne.make_sphere_model(r0=(0., 0., 0.), head_radius=None)  # Use this for all testing
 
-perts = dict(max_percent_imb=10, variance_imb=0, preferred_side_imb=0,
+perts = dict(max_percent_imb=10, variance_imb=0, preferred_side_imb=1,
              max_error_nn=0, variance_nn=0, preferred_direction_nn=0,
              max_translation=4)
 sign = perts['preferred_side_imb']
@@ -17,24 +16,24 @@ local_data_path = 'C:\Pert_Inv\Local_mne_data\side%s' % (sign,)
 min_rad, max_rad = 0, 90
 
 big_data = np.zeros((max_shift + 1, max_imbalance + 1, max_rad - min_rad + 1, 22))
-nn = [1, 0, 0]
-
+nn = [0, 0, 1]
+sourcenorm = [0, 0, 1] / np.linalg.norm([0, 0, 1])
 for l in range(0, max_shift + 1):
     perts['max_translation'] = l
     for k in range(0, max_imbalance + 1):
         perts['max_percent_imb'] = k
-        dip_fit_long, dip_fit_pert, testsources = fit_dips(min_rad, max_rad, nn, sphere, perts)
+        dip_fit_long, dip_fit_pert, testsources = fit_dips(min_rad, max_rad, nn, sphere, perts, sourcenorm)
         data = np.zeros((max_rad - min_rad + 1, 22))
         for i in range(0, max_rad):
             for j in range(0, 3):
-                data[i, 1 + j] = round(testsources['rr'][i][j], 3)
-                data[i, 4 + j] = round(dip_fit_long.pos[i][j], 3)
-                data[i, 7 + j] = round(dip_fit_long.ori[i][j], 3)
-                data[i, 10 + j] = round(dip_fit_pert.pos[i][j], 3)
-                data[i, 13 + j] = round(dip_fit_pert.ori[i][j], 3)
-                data[i, 19] = round(dip_fit_pert.pos[i][2], 3)
-                data[i, 20] = round(dip_fit_long.gof[i], 3)
-                data[i, 21] = round(dip_fit_pert.gof[i], 3)
+                data[i, 1 + j] = round(testsources['rr'][i][j], 6)
+                data[i, 4 + j] = round(dip_fit_long.pos[i][j], 6)
+                data[i, 7 + j] = round(dip_fit_long.ori[i][j], 6)
+                data[i, 10 + j] = round(dip_fit_pert.pos[i][j], 6)
+                data[i, 13 + j] = round(dip_fit_pert.ori[i][j], 6)
+                data[i, 19] = round(dip_fit_pert.pos[i][2], 6)
+                data[i, 20] = round(dip_fit_long.gof[i], 6)
+                data[i, 21] = round(dip_fit_pert.gof[i], 6)
         big_data[l, k] = data
 
 
