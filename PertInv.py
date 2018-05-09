@@ -16,8 +16,8 @@ local_data_path = 'C:\Pert_Inv\Local_mne_data\side%s' % (sign,)
 min_rad, max_rad = 0, 90
 
 big_data = np.zeros((max_shift + 1, max_imbalance + 1, max_rad - min_rad + 1, 22))
-nn = [0, 0, 1]
-sourcenorm = [0, 0, 1] / np.linalg.norm([0, 0, 1])
+nn = [0, 1, 0]
+sourcenorm = [1, 0, 0] / np.linalg.norm([1, 0, 0])
 for l in range(0, max_shift + 1):
     perts['max_translation'] = l
     for k in range(0, max_imbalance + 1):
@@ -31,16 +31,16 @@ for l in range(0, max_shift + 1):
                 data[i, 7 + j] = round(dip_fit_long.ori[i][j], 6)
                 data[i, 10 + j] = round(dip_fit_pert.pos[i][j], 6)
                 data[i, 13 + j] = round(dip_fit_pert.ori[i][j], 6)
-                data[i, 19] = round(dip_fit_pert.pos[i][2], 6)
+                data[i, 19] = round(dip_fit_pert.pos[i][0], 6)
                 data[i, 20] = round(dip_fit_long.gof[i], 6)
                 data[i, 21] = round(dip_fit_pert.gof[i], 6)
         big_data[l, k] = data
 
 
-        data_fname = local_data_path + '/%s_xshift_%s_imb_%s_sign_%s_MaxRad_00z_Norm%s%s%s.csv' \
+        data_fname = local_data_path + '/%s_xshift_%s_imb_%s_sign_%s_MaxRad_00x_Norm%s%s%s.csv' \
                      % (l, k, sign, max_rad, nn[0], nn[1], nn[2])
         np.savetxt(data_fname, data, delimiter=",")
-big_data_fname = local_data_path + '/%s_MaxXshift_%s_Max_imb%s_sign_%s_MaxRad_00z_Norm%s%s%s.csv'\
+big_data_fname = local_data_path + '/%s_MaxXshift_%s_Max_imb%s_sign_%s_MaxRad_00x_Norm%s%s%s.csv'\
                  % (max_shift, max_imbalance, sign, max_rad, nn[0], nn[1], nn[2])
 np.save(big_data_fname, big_data)
 
