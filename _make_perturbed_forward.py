@@ -63,7 +63,7 @@ def _read_coil_defs(perts, elekta_defs=False, verbose=None):
         position vector.
     """
     # coil_dir = op.join(op.split(__file__)[0], '..', 'data')
-    coil_dir = 'C:\Users\/3l3ct\PycharmProjects\Pert_Inv\data/'  #'C:\Pert_Inv\data/'
+    coil_dir = 'C:\Pert_Inv\data/'
     coils = list()
     if elekta_defs:
         coils += _read_coil_def_file(op.join(coil_dir, '/coil_def_Elekta.dat'))
@@ -78,6 +78,7 @@ _coil_register = {}
 
 def _read_coil_def_file(fname, perts):
     """Read a coil def file."""
+    _coil_register = {}
     if fname not in _coil_register:
         big_val = 0.5
         coils = list()
@@ -101,7 +102,14 @@ def _read_coil_def_file(fname, perts):
                 cosmag = list()
                 acc = int(vals[2])
                 w = list()
-                x = .01*perts['mean_percent_imb'][0]
+                max_imb = perts['max_percent_imb']
+                x = abs(np.random.normal(0, max_imb))*.01
+                shift = 0
+                rot = 0
+                if perts['max_translation'] >> 0:
+                    shift = np.random.normal(0, perts['max_translation'])*.001
+                if perts['max_error_nn'] >> 0:
+                    rot = np.random.normal(0, perts['max_error_nn'])
                 for p in range(npts):
                     # get next non-comment line
                     line = lines.pop()
@@ -111,27 +119,22 @@ def _read_coil_def_file(fname, perts):
                     assert len(vals) == 7
                     alpha = abs(npts*vals[0])
                     difference = alpha*x/(npts*(2+x))
+                    sign = perts['preferred_side_imb']
                     coiltype = int(coil['coil_type'])
-                    if coiltype == 3012 and acc == 2:
-                        print(alpha, difference, vals[0])
+                    #if coiltype == 3012 and acc == 2:
+                    #    print('imb = ', x, difference, vals[0])
+                    #    print(w)
                     # print(int(coil['coil_type']), type(coil['coil_type']), difference)
                     # Read and verify data for each integration point
                     if coiltype == 3012:
-                        w.append(vals[0] + difference)
-                        '''if p >> npts/2:
-                            w.append(vals[0] + difference)
-                            print(vals[0])
-                            print(vals[0] + difference)
-                            exit(0)
-                        else:
-                            w.append(vals[0]+difference)'''
+                        w.append(vals[0] + ((-1)**sign)*difference)
                     else:
                         w.append(vals[0])
+                    # we are shifting grads and mags
+                    vals[1] += shift
                     rmag.append(vals[[1, 2, 3]])
                     cosmag.append(vals[[4, 5, 6]])
                 w = np.array(w)
-                if coiltype == 3012 and acc == 2:
-                    print w
                 rmag = np.array(rmag)
                 cosmag = np.array(cosmag)
                 size = np.sqrt(np.sum(cosmag ** 2, axis=1))
@@ -158,7 +161,6 @@ def _create_meg_coil(coilset, ch, acc, do_es):
     for coil in coilset:
         if coil['coil_type'] == (ch['coil_type'] & 0xFFFF) and \
                 coil['accuracy'] == acc:
-            print(coil['coil_type'])
             break
     else:
         raise RuntimeError('Desired coil definition not found '
@@ -220,9 +222,6 @@ def _create_meg_coils(chs, acc, t=None, coilset=None, do_es=False):
     coilset = _read_coil_defs(verbose=False) if coilset is None else coilset
     coils = [_create_meg_coil(coilset, ch, acc, do_es) for ch in chs]
     _transform_orig_meg_coils(coils, t, do_es=do_es)
-    for c in coils:
-        print(c['type'])
-    # exit(6)
     return coils
 
 
